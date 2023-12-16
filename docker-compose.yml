@@ -1,6 +1,6 @@
 version : "3.3"
 services :
   web :
-     image : mydevops90/newnoteapp:latest
+     image : mydevops90/newnoteapp1:latest
      ports :
          - "8000:8000"
