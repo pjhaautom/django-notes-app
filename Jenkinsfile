@@ -1,35 +1,44 @@
-pipeline {
-    agent any 
-    
+pipeline{
+    agent any
     stages{
-        stage("Clone Code"){
-            steps {
-                echo "Cloning the code"
-                git url:"https://github.com/LondheShubham153/django-notes-app.git", branch: "main"
+        stage("clone code"){
+            steps{
+              echo "cloning from github" 
+              git url:"https://github.com/pjhaautom/django-notes-app.git"
+              
+            }
+            
+            
+        }
+        stage("build"){
+            steps{
+                echo "building the code"
+                sh "docker build -t newnoteapp2 ."
+                
+                
             }
         }
-        stage("Build"){
-            steps {
-                echo "Building the image"
-                sh "docker build -t my-note-app ."
-            }
-        }
-        stage("Push to Docker Hub"){
-            steps {
-                echo "Pushing the image to docker hub"
-                withCredentials([usernamePassword(credentialsId:"dockerHub",passwordVariable:"dockerHubPass",usernameVariable:"dockerHubUser")]){
-                sh "docker tag my-note-app ${env.dockerHubUser}/my-note-app:latest"
-                sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"
-                sh "docker push ${env.dockerHubUser}/my-note-app:latest"
+        stage("push to dockerhub"){
+            steps{
+                echo "pushing the image to dockerhub"
+                withCredentials([usernamePassword(credentialsId:"dockerhub",passwordVariable:"dockerhubpass",usernameVariable:"dockerHubUser")]){
+                sh "docker tag newnoteapp2 ${env.dockerhubUser}/newnoteapp2:latest "
+                sh "docker login -u ${env.dockerhubUser} -p ${env.dockerhubpass}"
+                sh "docker push ${env.dockerhubUser}/newnoteapp2:latest"
                 }
+                
             }
         }
-        stage("Deploy"){
-            steps {
-                echo "Deploying the container"
+        stage("deploy"){
+            steps{
+                echo "deploy the app"
                 sh "docker-compose down && docker-compose up -d"
+            
                 
             }
         }
     }
+    
+    
+    
 }
